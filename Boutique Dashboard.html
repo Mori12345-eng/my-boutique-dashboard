@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AutoPilot Boutique Dashboard: Content & Insights</title>
+    <!-- Chosen Palette: Warm Neutrals & Soft Blue -->
+    <!-- Application Structure Plan: A single-page dashboard application designed to be engaging. It features the core interactive "AI Content Creator" tool, followed by "Performance Insights" with dynamic charts (Chart.js) to visually quantify benefits. It then explains "How the Full AutoPilot Bundle Works" and presents the premium bundle features in a structured comparison. A modal handles pricing and GCash payment instructions. The site concludes with social proof. This flow allows users to experience the free tool, understand the full system's value, and access payment details directly. -->
+    <!-- Visualization & Content Choices: 
+        - Report Info: "Save Time: Reclaim hours each week" -> Goal: Quantify the time-saving benefit. -> Viz/Method: Interactive Bar Chart (Chart.js) comparing weekly marketing hours 'Before' and 'With AutoPilot'. -> Interaction: Buttons to toggle data views. -> Justification: A direct visual comparison is more impactful than text alone.
+        - Report Info: "Boost Engagement" -> Goal: Illustrate potential growth in customer interaction. -> Viz/Method: Doughnut Chart (Chart.js) showing the 'Engagement Mix'. -> Interaction: Hovering over segments reveals tooltips with details. -> Justification: Provides a simple, digestible visual of a positive outcome.
+        - Report Info: The product's core function ("Describe, Generate, Copy & Post") -> Goal: Allow users to experience the product's primary feature. -> Viz/Method: Interactive HTML form that simulates an AI response. -> Interaction: User types in a description and clicks a button to see generated content appear. -> Justification: Direct interaction is the most powerful way to demonstrate value and build user confidence.
+        - Report Info: Premium Bundle Features -> Goal: Clearly articulate the value of the paid upgrade. -> Viz/Method: Structured HTML/CSS table with Unicode checkmarks (✔). -> Interaction: Static, clear layout for easy comparison. -> Justification: Avoids complexity, providing a scannable and unambiguous overview of features.
+        - Report Info: Social Media Scheduling, Email Sending, Inventory Alerts -> Goal: Explain how these "autopilot" features work as part of the full system. -> Viz/Method: Dedicated HTML sections with explanatory text and conceptual icons. -> Interaction: Static explanation. -> Justification: Crucial for demonstrating the full value of the premium bundle.
+        - Report Info: Pricing & Payment -> Goal: Clearly present pricing and facilitate payment. -> Viz/Method: Interactive Modal with pricing tiers and GCash instructions. -> Interaction: Button click to open modal, button click within modal to scroll to payment details, close button. -> Justification: Keeps pricing details clean and accessible without cluttering the main page.
+        - Report Info: Testimonials -> Goal: Build trust and provide social proof. -> Viz/Method: Clean, card-based layout. -> Interaction: Static display for readability. -> Justification: Presents authentic user feedback in a clean, credible format.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #F9F9F7;
+            color: #383838;
+        }
+        .warm-neutral-bg { background-color: #F4F1ED; }
+        .soft-blue-accent { color: #5A8FAD; }
+        .soft-blue-bg { background-color: #5A8FAD; }
+        .soft-blue-border { border-color: #5A8FAD; }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 350px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #F9F9F7; }
+        ::-webkit-scrollbar-thumb { background: #d1c9c0; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #bbaea2; }
+        .tab-button {
+            padding: 0.75rem 1.25rem;
+            font-size: 1rem;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s ease-in-out;
+            color: #6B7280;
+        }
+        .tab-button:hover {
+            color: #5A8FAD;
+        }
+        .tab-button.active {
+            border-bottom: 2px solid #5A8FAD;
+            color: #5A8FAD;
+            font-weight: 600;
+        }
+        .output-box {
+            position: relative;
+            padding: 1rem;
+            background-color: #F4F1ED;
+            border-radius: 0.75rem;
+            min-height: 80px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            border: 1px solid #E0D8D0;
+        }
+        .copy-button {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            background-color: #5A8FAD;
+            color: white;
+            padding: 0.3rem 0.6rem;
+            border-radius: 0.5rem;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: background-color 0.2s ease-in-out;
+            opacity: 0.9;
+        }
+        .copy-button:hover {
+            background-color: #4a7a93;
+            opacity: 1;
+        }
+        .message-box {
+            position: fixed;
+            bottom: 1.5rem;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #333;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.75rem;
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+            z-index: 1000;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+        .message-box.show {
+            opacity: 1;
+        }
+        .icon-feature {
+            font-size: 2.5rem; /* Larger icons */
+            color: #5A8FAD; /* Accent color for icons */
+            margin-bottom: 0.75rem;
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+        }
+        .modal-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+        .modal-content {
+            background-color: #ffffff;
+            padding: 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            max-width: 500px;
+            width: 90%;
+            position: relative;
+            transform: translateY(-20px);
+            transition: transform 0.3s ease-in-out;
+            max-height: 90vh; /* Limit modal height */
+            overflow-y: auto; /* Enable scrolling for content */
+        }
+        .modal-overlay.show .modal-content {
+            transform: translateY(0);
+        }
+        .modal-close-button {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #6B7280;
+        }
+        .modal-close-button:hover {
+            color: #383838;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <main class="container mx-auto p-4 md:p-8 max-w-7xl">
+
+        <header class="text-center py-8">
+            <h1 class="text-4xl md:text-5xl font-bold soft-blue-accent">AutoPilot Boutique Dashboard</h1>
+            <p class="mt-4 text-lg text-gray-600">An interactive overview of the AutoPilot Content Creator system, designed for busy boutique owners.</p>
+        </header>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            
+            <section class="lg:col-span-2 bg-white p-6 rounded-2xl shadow-md">
+                <h2 class="text-2xl font-bold mb-1">AI Content Creator</h2>
+                <p class="text-gray-500 mb-6">Experience the core of our tool. Describe a product and get instant marketing content for social media and email.</p>
+                
+                <div>
+                    <label for="productDescription" class="block text-md font-medium text-gray-700 mb-2">1. Describe Your Product:</label>
+                    <textarea id="productDescription" rows="4" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-soft-blue-border transition" placeholder="e.g., 'A flowy, floral print midi-dress in soft cotton, perfect for summer days or casual outings. Available in sizes S-XL.'"></textarea>
+                </div>
+
+                <button id="generateBtn" class="w-full soft-blue-bg hover:bg-opacity-90 text-white font-bold py-3 px-4 rounded-lg mt-4 text-lg transition-transform transform hover:scale-105">
+                    <span id="btnText">2. Generate Content</span>
+                    <span id="loadingSpinner" class="hidden flex items-center justify-center">
+                        <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        Generating...
+                    </span>
+                </button>
+
+                <div id="outputContainer" class="mt-6 hidden">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-4">3. Copy & Post Your Generated Content:</h3>
+                    <div class="space-y-4">
+                        <div>
+                            <p class="font-semibold text-gray-700 mb-2">📸 Instagram Post</p>
+                            <div id="instagramOutput" class="output-box">
+                                <button class="copy-button" onclick="copyToClipboard('instagramOutput')">Copy</button>
+                            </div>
+                        </div>
+                        <div>
+                            <p class="font-semibold text-gray-700 mb-2">👍 Facebook Post</p>
+                            <div id="facebookOutput" class="output-box">
+                                <button class="copy-button" onclick="copyToClipboard('facebookOutput')">Copy</button>
+                            </div>
+                        </div>
+                         <div>
+                            <p class="font-semibold text-gray-700 mb-2">🐦 Short Post (e.g., X/Twitter)</p>
+                            <div id="shortPostOutput" class="output-box">
+                                <button class="copy-button" onclick="copyToClipboard('shortPostOutput')">Copy</button>
+                            </div>
+                        </div>
+                        <div>
+                            <p class="font-semibold text-gray-700 mb-2">✉️ Email Draft</p>
+                            <div id="emailOutput" class="output-box">
+                                <button class="copy-button" onclick="copyToClipboard('emailOutput')">Copy</button>
+                            </div>
+                        </div>
+                        <button class="w-full soft-blue-bg hover:bg-opacity-90 text-white font-bold py-2 px-4 rounded-lg text-md transition-transform transform hover:scale-105 mt-4" onclick="copyAllContent()">Copy All Generated Content</button>
+                    </div>
+                </div>
+            </section>
+
+            <section class="bg-white p-6 rounded-2xl shadow-md flex flex-col">
+                 <h2 class="text-2xl font-bold mb-1">Performance Insights</h2>
+                <p class="text-gray-500 mb-6">Visualize the impact of automating your content creation and marketing efforts.</p>
+                <div class="border-b border-gray-200">
+                    <nav class="-mb-px flex space-x-6" aria-label="Tabs">
+                        <button class="tab-button active" data-tab="time">Time Saved</button>
+                        <button class="tab-button" data-tab="engagement">Engagement Boost</button>
+                    </nav>
+                </div>
+                <div id="charts" class="flex-grow flex flex-col justify-center">
+                    <div class="mt-6 tab-content" id="time-chart">
+                        <p class="text-center text-sm text-gray-600 mb-2">Compare weekly hours spent on marketing tasks.</p>
+                        <div class="chart-container">
+                            <canvas id="timeSavedChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="mt-6 tab-content hidden" id="engagement-chart">
+                         <p class="text-center text-sm text-gray-600 mb-2">Hypothetical boost in customer engagement mix.</p>
+                        <div class="chart-container">
+                            <canvas id="engagementBoostChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+        </div>
+
+        <section class="mt-8 bg-white p-6 md:p-8 rounded-2xl shadow-md">
+            <h2 class="text-3xl font-bold text-center mb-2">How the Full AutoPilot Bundle Works</h2>
+            <p class="text-center text-gray-500 max-w-3xl mx-auto mb-8">The AutoPilot Bundle goes beyond content generation, connecting your marketing efforts for true automation. Here's how it achieves "autopilot" for your boutique:</p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+                <div class="p-4 bg-warm-neutral-bg rounded-lg shadow-sm">
+                    <span class="icon-feature">📅</span>
+                    <h3 class="text-xl font-semibold mb-2">Automated Social Scheduling</h3>
+                    <p class="text-gray-700 text-sm">Once AI generates your posts, the bundle connects to your favorite scheduler (like Buffer or Hootsuite) to automatically plan and publish content across Instagram, Facebook, and more. Set it once, and your social media runs itself.</p>
+                </div>
+                <div class="p-4 bg-warm-neutral-bg rounded-lg shadow-sm">
+                    <span class="icon-feature">📧</span>
+                    <h3 class="text-xl font-semibold mb-2">Automated Email Campaigns</h3>
+                    <p class="text-gray-700 text-sm">Your AI-generated email drafts are automatically sent to your customer lists via integrated email marketing platforms (like Mailchimp or ConvertKit). Create welcome sequences, new arrival alerts, or sales promotions that send on schedule.</p>
+                </div>
+                <div class="p-4 bg-warm-neutral-bg rounded-lg shadow-sm">
+                    <span class="icon-feature">📦</span>
+                    <h3 class="text-xl font-semibold mb-2">Basic Inventory Alerts</h3>
+                    <p class="text-gray-700 text-sm">Link your simple inventory spreadsheet (e.g., Google Sheet) to the bundle. Get automated email or SMS alerts when stock levels for your best-sellers drop below a set threshold, so you can reorder before you run out.</p>
+                </div>
+            </div>
+
+            <h2 class="text-3xl font-bold text-center mt-12 mb-2">Unlock the Full AutoPilot Bundle</h2>
+            <p class="text-center text-gray-500 max-w-3xl mx-auto mb-8">Ready to transform your marketing? The full bundle includes these powerful automations, plus exclusive AI prompts and templates.</p>
+            
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="border-b-2 border-gray-200">
+                            <th class="p-4 text-xl font-semibold text-gray-700">Feature</th>
+                            <th class="p-4 text-center text-lg font-semibold text-gray-600">Free Creator</th>
+                            <th class="p-4 text-center text-lg font-semibold soft-blue-accent">Full AutoPilot Bundle</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="border-b border-gray-100 warm-neutral-bg">
+                            <td class="p-4">AI Content Generation (3 Social, 1 Email)</td>
+                            <td class="p-4 text-center text-2xl text-green-600">✔</td>
+                            <td class="p-4 text-center text-2xl text-green-600">✔</td>
+                        </tr>
+                        <tr class="border-b border-gray-100">
+                            <td class="p-4">Automated Social Scheduling (Buffer Integration)</td>
+                            <td class="p-4 text-center text-xl text-gray-400">✖</td>
+                            <td class="p-4 text-center text-2xl text-green-600">✔</td>
+                        </tr>
+                        <tr class="border-b border-gray-100 warm-neutral-bg">
+                            <td class="p-4">Automated Email Campaigns</td>
+                            <td class="p-4 text-center text-xl text-gray-400">✖</td>
+                            <td class="p-4 text-center text-2xl text-green-600">✔</td>
+                        </tr>
+                         <tr class="border-b border-gray-100">
+                            <td class="p-4">Basic Inventory Alerts</td>
+                            <td class="p-4 text-center text-xl text-gray-400">✖</td>
+                            <td class="p-4 text-center text-2xl text-green-600">✔</td>
+                        </tr>
+                        <tr class="warm-neutral-bg">
+                            <td class="p-4">Exclusive AI Prompts & Advanced Templates</td>
+                             <td class="p-4 text-center text-xl text-gray-400">✖</td>
+                            <td class="p-4 text-center text-2xl text-green-600">✔</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="text-center mt-8">
+                 <button id="explorePricingBtn" class="soft-blue-bg hover:bg-opacity-90 text-white font-bold py-3 px-8 rounded-lg text-xl transition-transform transform hover:scale-105 shadow-md">Explore the Full Bundle & Pricing</button>
+            </div>
+        </section>
+
+        <section class="mt-8">
+            <h2 class="text-3xl font-bold text-center mb-8">What Boutique Owners Are Saying</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="bg-white p-6 rounded-2xl shadow-md">
+                    <p class="text-gray-700 italic text-lg leading-relaxed">"This tool is a lifesaver! I used to dread writing captions, now it's done in seconds. It totally gets the boutique vibe and saves me so much mental energy."</p>
+                    <p class="text-right mt-4 font-semibold text-gray-800">- Sarah L., Local Boutique Owner</p>
+                </div>
+                <div class="bg-white p-6 rounded-2xl shadow-md">
+                    <p class="text-gray-700 italic text-lg leading-relaxed">"Finally, marketing automation that makes sense for my small shop. The time I've saved with the full bundle is unbelievable. I can focus on my customers again!"</p>
+                    <p class="text-right mt-4 font-semibold text-gray-800">- Mark T., Fashion Retailer</p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <div id="messageBox" class="message-box"></div>
+
+    <footer class="text-center py-8 mt-8 text-gray-500 text-sm">
+        <p>Powered by AutoPilot SaaS Bundles</p>
+    </footer>
+
+    <!-- Pricing Modal -->
+    <div id="pricingModal" class="modal-overlay">
+        <div class="modal-content">
+            <button class="modal-close-button" id="closeModalBtn">&times;</button>
+            <h2 class="text-3xl font-bold text-center soft-blue-accent mb-6">Full AutoPilot Bundle Pricing</h2>
+            
+            <div class="grid grid-cols-1 gap-6">
+                <div class="p-6 border-2 soft-blue-border rounded-lg text-center bg-warm-neutral-bg">
+                    <h3 class="text-2xl font-bold mb-2">Standard Plan</h3>
+                    <p class="text-4xl font-extrabold soft-blue-accent mb-4">₱499<span class="text-xl text-gray-600"> (One-Time Access)</span></p>
+                    <p class="text-gray-700 mb-4">Perfect for growing boutiques. Includes all core automations.</p>
+                    <ul class="text-left text-gray-700 space-y-2 mb-6">
+                        <li>✔ AI Content Generation (3 Social, 1 Email)</li>
+                        <li>✔ Automated Social Scheduling</li>
+                        <li>✔ Automated Email Campaigns</li>
+                        <li>✔ Basic Inventory Alerts</li>
+                        <li>✔ Exclusive AI Prompts & Templates</li>
+                    </ul>
+                    <button id="getStartedNowBtn" class="soft-blue-bg hover:bg-opacity-90 text-white font-bold py-2 px-6 rounded-lg text-lg transition-transform transform hover:scale-105">Get Started Now</button>
+                </div>
+                <!-- You can add more tiers here, e.g., a "Pro Plan" -->
+            </div>
+
+            <div id="gcashPaymentSection" class="mt-8 text-center bg-gray-50 p-4 rounded-lg border border-gray-200">
+                <h3 class="text-xl font-semibold mb-3">How to Subscribe via GCash:</h3>
+                <p class="text-gray-700 mb-2">1. Open your GCash app.</p>
+                <p class="text-gray-700 mb-2">2. Select "Send Money" or "Express Send".</p>
+                <p class="text-gray-700 mb-2">3. Enter our GCash number:</p>
+                <p class="text-2xl font-bold soft-blue-accent mb-4">09753795691</p>
+                <p class="text-gray-700">4. Enter the amount (₱499). Add your email in the message/notes for confirmation.</p>
+                <p class="text-gray-700 mt-2">5. Send us a screenshot of your transaction to <a href="mailto:contentcreatorforboutiques@gmail.com" class="text-blue-600 hover:underline">contentcreatorforboutiques@gmail.com</a> for activation.</p>
+                <p class="text-sm text-gray-500 mt-4">**Important:** Full access to the AutoPilot Bundle's features (social scheduling, email campaigns, inventory alerts, and exclusive templates) will be set up and provided to your email within 24 hours upon successful payment confirmation for this one-time access.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            const generateBtn = document.getElementById('generateBtn');
+            const productDescriptionInput = document.getElementById('productDescription');
+            const outputContainer = document.getElementById('outputContainer');
+            const loadingSpinner = document.getElementById('loadingSpinner');
+            const btnText = document.getElementById('btnText');
+            
+            const instagramOutput = document.getElementById('instagramOutput');
+            const facebookOutput = document.getElementById('facebookOutput');
+            const shortPostOutput = document.getElementById('shortPostOutput');
+            const emailOutput = document.getElementById('emailOutput');
+            const messageBox = document.getElementById('messageBox');
+
+            const explorePricingBtn = document.getElementById('explorePricingBtn');
+            const pricingModal = document.getElementById('pricingModal');
+            const closeModalBtn = document.getElementById('closeModalBtn');
+            const getStartedNowBtn = document.getElementById('getStartedNowBtn'); // New button reference
+            const gcashPaymentSection = document.getElementById('gcashPaymentSection'); // New section reference
+
+
+            function showMessage(message) {
+                messageBox.textContent = message;
+                messageBox.classList.add('show');
+                setTimeout(() => {
+                    messageBox.classList.remove('show');
+                }, 2000);
+            }
+
+            function copyToClipboard(elementId) {
+                const element = document.getElementById(elementId);
+                const text = element.textContent.trim();
+
+                const textarea = document.createElement('textarea');
+                textarea.value = text;
+                document.body.appendChild(textarea);
+                textarea.select();
+                try {
+                    document.execCommand('copy');
+                    showMessage('Copied to clipboard!');
+                } catch (err) {
+                    showMessage('Failed to copy. Please copy manually.');
+                }
+                document.body.removeChild(textarea);
+            }
+
+            function copyAllContent() {
+                const instagramText = instagramOutput.textContent.trim();
+                const facebookText = facebookOutput.textContent.trim();
+                const shortPostText = shortPostOutput.textContent.trim();
+                const emailText = emailOutput.textContent.trim();
+
+                const allContent = `Instagram Post:\n${instagramText}\n\nFacebook Post:\n${facebookText}\n\nShort Post:\n${shortPostText}\n\nEmail Draft:\n${emailText}`;
+
+                const textarea = document.createElement('textarea');
+                textarea.value = allContent;
+                document.body.appendChild(textarea);
+                textarea.select();
+                try {
+                    document.execCommand('copy');
+                    showMessage('All content copied to clipboard!');
+                } catch (err) {
+                    showMessage('Failed to copy all content. Please copy manually.');
+                }
+                document.body.removeChild(textarea);
+            }
+
+
+            generateBtn.addEventListener('click', async () => {
+                const promptText = productDescriptionInput.value.trim();
+
+                if (!promptText) {
+                    showMessage('Please enter a product description.');
+                    return;
+                }
+
+                btnText.classList.add('hidden');
+                loadingSpinner.classList.remove('hidden');
+                generateBtn.disabled = true;
+                outputContainer.classList.add('hidden');
+                instagramOutput.textContent = '';
+                facebookOutput.textContent = '';
+                shortPostOutput.textContent = '';
+                emailOutput.textContent = '';
+
+                try {
+                    const fullPrompt = `Based on the following product description for a boutique product, generate:
+                    1. A concise Instagram caption (max 2-3 lines) with 3-5 relevant emojis and 3-5 relevant hashtags.
+                    2. A slightly longer, engaging Facebook post (2-4 sentences) with a call to action.
+                    3. A very short social media post (1-2 sentences, like for X/Twitter).
+                    4. A short, compelling email draft (3-5 sentences) for a newsletter promoting this product, including a placeholder for a link.
+
+                    Format the output clearly with headings like "Instagram Post:", "Facebook Post:", "Short Post:", and "Email Draft:". Ensure the tone is appealing to boutique customers.
+
+                    Product Description:
+                    "${promptText}"`;
+
+                    let chatHistory = [];
+                    chatHistory.push({ role: "user", parts: [{ text: fullPrompt }] });
+
+                    const payload = {
+                        contents: chatHistory,
+                        generationConfig: {
+                            temperature: 0.7,
+                            topP: 0.95,
+                            topK: 40,
+                        }
+                    };
+
+                    // IMPORTANT: Replace "YOUR_GEMINI_API_KEY_HERE" with your actual Gemini API key.
+                    // You can get one from Google AI Studio: https://aistudio.google.com/
+                    const apiKey = "AIzaSyAjXYJqGpEfZkO3kDuqdO-r8Fc1KSxocg8"; 
+                    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    const result = await response.json();
+
+                    if (result.candidates && result.candidates.length > 0 &&
+                        result.candidates[0].content && result.candidates[0].content.parts &&
+                        result.candidates[0].content.parts.length > 0) {
+                        const generatedText = result.candidates[0].content.parts[0].text;
+
+                        const instagramMatch = generatedText.match(/Instagram Post:\s*([\s\S]*?)(?=Facebook Post:|$)/i);
+                        const facebookMatch = generatedText.match(/Facebook Post:\s*([\s\S]*?)(?=Short Post:|$)/i);
+                        const shortPostMatch = generatedText.match(/Short Post:\s*([\s\S]*?)(?=Email Draft:|$)/i);
+                        const emailMatch = generatedText.match(/Email Draft:\s*([\s\S]*)/i);
+
+                        instagramOutput.textContent = instagramMatch ? instagramMatch[1].trim() : 'Could not generate Instagram post.';
+                        facebookOutput.textContent = facebookMatch ? facebookMatch[1].trim() : 'Could not generate Facebook post.';
+                        shortPostOutput.textContent = shortPostMatch ? shortPostMatch[1].trim() : 'Could not generate short post.';
+                        emailOutput.textContent = emailMatch ? emailMatch[1].trim() : 'Could not generate email draft.';
+
+                        outputContainer.classList.remove('hidden');
+                    } else {
+                        showMessage('Failed to generate content. Please try again.');
+                    }
+
+                } catch (error) {
+                    showMessage('An error occurred during generation. Please try again later.');
+                } finally {
+                    btnText.classList.remove('hidden');
+                    loadingSpinner.classList.add('hidden');
+                    generateBtn.disabled = false;
+                }
+            });
+            
+            const chartData = {
+                time: {
+                    labels: ['Content Creation', 'Scheduling', 'Email Marketing', 'Analytics'],
+                    datasets: [{
+                        label: 'Before AutoPilot (Hours/Week)',
+                        data: [5, 2, 3, 1],
+                        backgroundColor: ['#E0D8D0', '#E0D8D0', '#E0D8D0', '#E0D8D0'],
+                        borderColor: '#C4BBAF',
+                        borderWidth: 1,
+                        borderRadius: 5
+                    }, {
+                        label: 'With AutoPilot (Hours/Week)',
+                        data: [1, 0.5, 0.5, 0.5],
+                        backgroundColor: ['#A8C5D6', '#A8C5D6', '#A8C5D6', '#A8C5D6'],
+                        borderColor: '#5A8FAD',
+                        borderWidth: 1,
+                        borderRadius: 5
+                    }]
+                },
+                engagement: {
+                    labels: ['Likes & Comments', 'Shares', 'Website Clicks', 'Direct Messages'],
+                    datasets: [{
+                        label: 'Engagement Mix',
+                        data: [120, 30, 80, 45],
+                        backgroundColor: ['#A8C5D6', '#C4BBAF', '#F4F1ED', '#88a6b8'],
+                        hoverOffset: 4
+                    }]
+                }
+            };
+            
+            let timeChart, engagementChart;
+
+            const timeCtx = document.getElementById('timeSavedChart').getContext('2d');
+            timeChart = new Chart(timeCtx, {
+                type: 'bar',
+                data: chartData.time,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: { 
+                        y: { 
+                            beginAtZero: true, 
+                            title: { display: true, text: 'Hours per Week' },
+                            ticks: {
+                                callback: function(value) {
+                                    return Number.isInteger(value) ? value : value.toFixed(1);
+                                }
+                            }
+                        },
+                        x: {
+                            ticks: {
+                                callback: function(value, index, values) {
+                                    const label = this.getLabelForValue(value);
+                                    return label.length > 16 ? label.substring(0, 13) + '...' : label;
+                                }
+                            }
+                        }
+                    },
+                    plugins: { 
+                        legend: { position: 'bottom' },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.parsed.y !== null) {
+                                        label += context.parsed.y + ' hours';
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            const engagementCtx = document.getElementById('engagementBoostChart').getContext('2d');
+            engagementChart = new Chart(engagementCtx, {
+                type: 'doughnut',
+                data: chartData.engagement,
+                 options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { 
+                        legend: { position: 'bottom' },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.parsed !== null) {
+                                        label += context.parsed + ' interactions';
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            const tabs = document.querySelectorAll('.tab-button');
+            const tabContents = document.querySelectorAll('.tab-content');
+
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    tabs.forEach(item => item.classList.remove('active'));
+                    tab.classList.add('active');
+
+                    const target = tab.getAttribute('data-tab');
+                    tabContents.forEach(content => {
+                        if (content.id === `${target}-chart`) {
+                            content.classList.remove('hidden');
+                        } else {
+                            content.classList.add('hidden');
+                        }
+                    });
+                });
+            });
+
+            // Modal functionality
+            explorePricingBtn.addEventListener('click', () => {
+                pricingModal.classList.add('show');
+                // Scroll to top of modal when opened
+                pricingModal.querySelector('.modal-content').scrollTop = 0;
+            });
+
+            closeModalBtn.addEventListener('click', () => {
+                pricingModal.classList.remove('show');
+            });
+
+            pricingModal.addEventListener('click', (event) => {
+                if (event.target === pricingModal) {
+                    pricingModal.classList.remove('show');
+                }
+            });
+
+            // "Get Started Now" button in modal scrolls to GCash section
+            getStartedNowBtn.addEventListener('click', () => {
+                const gcashSection = document.getElementById('gcashPaymentSection');
+                if (gcashSection) {
+                    // Use scrollIntoView to reliably scroll the section into view within the modal
+                    gcashSection.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start' // Scrolls the top of the element to the top of the scrollable area
+                    });
+                }
+            });
+        });
+    </script>
+
+</body>
+</html>
